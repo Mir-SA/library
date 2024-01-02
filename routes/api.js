@@ -17,19 +17,19 @@ module.exports = function (app) {
 
     .post(async function (req, res) {
       let title = req.body.title;
-      console.log(title);
       const book = new Book({
         ...req.body,
       });
-      // console.log(book);
       //response will contain new book object including atleast _id and title
       try {
         if (title) {
           await book.save();
           res.status(200).send({ _id: book.id, title });
+        } else {
+          res.send("missing required field title");
         }
-      } catch (err) {
-        res.send("missing required field title");
+      } catch (error) {
+        res.status(500).send("Error: ", error);
       }
     })
 
@@ -50,9 +50,13 @@ module.exports = function (app) {
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
       try {
         const data = await Book.findById(bookid);
-        res.status(200).send(data);
+        if (data != undefined) {
+          res.status(200).send(data);
+        } else {
+          res.send("no book exists");
+        }
       } catch (error) {
-        res.send("no book exists");
+        res.status(500).send("Error: ", error);
       }
     })
 
@@ -65,14 +69,20 @@ module.exports = function (app) {
       };
       //json res format same as .get
       try {
-        if (comment) {
-          let data = await Book.findByIdAndUpdate(bookid, update);
-          res.send(data);
-        } else {
+        if (comment == undefined || typeof comment != "string") {
           res.send("missing required field comment");
+        } else {
+          let data = await Book.findByIdAndUpdate(bookid, update, {
+            new: true,
+          });
+          if (data == null) {
+            res.send("no book exists");
+          } else {
+            res.send(data);
+          }
         }
       } catch (error) {
-        res.send("no book exists");
+        res.status(500).send("Error: ", error);
       }
     })
 
@@ -80,10 +90,14 @@ module.exports = function (app) {
       let bookid = req.params.id;
       //if successful response will be 'delete successful'
       try {
-        await Book.findByIdAndDelete(bookid);
-        res.status(200).send("delete successful");
+        const result = await Book.findByIdAndDelete(bookid);
+        if (result != null) {
+          res.status(200).send("delete successful");
+        } else {
+          res.send("no book exists");
+        }
       } catch (error) {
-        res.send("no book exists");
+        res.status(500).send("Error: ", error);
       }
     });
 };
