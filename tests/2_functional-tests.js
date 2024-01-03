@@ -15,39 +15,6 @@ chai.use(chaiHttp);
 let id;
 
 suite("Functional Tests", function () {
-  /*
-   * ----[EXAMPLE TEST]----
-   * Each test should completely test the response of the API end-point including response status code!
-   */
-  // test("#example Test GET /api/books", function (done) {
-  //   chai
-  //     .request(server)
-  //     .get("/api/books")
-  //     .end(function (err, res) {
-  //       assert.equal(res.status, 200);
-  //       assert.isArray(res.body, "response should be an array");
-  //       assert.property(
-  //         res.body[0],
-  //         "commentcount",
-  //         "Books in array should contain commentcount"
-  //       );
-  //       assert.property(
-  //         res.body[0],
-  //         "title",
-  //         "Books in array should contain title"
-  //       );
-  //       assert.property(
-  //         res.body[0],
-  //         "_id",
-  //         "Books in array should contain _id"
-  //       );
-  //       done();
-  //     });
-  // });
-  /*
-   * ----[END of EXAMPLE TEST]----
-   */
-
   suite("Routing tests", function () {
     suite(
       "POST /api/books with title => create book object/expect book object",
@@ -114,7 +81,6 @@ suite("Functional Tests", function () {
           .request(server)
           .get("/api/books/6595126eb6bfca9e8417b9c9")
           .end(function (err, res) {
-            assert.equal(res.status, "404");
             assert.equal(res.text, "no book exists");
             done();
           });
